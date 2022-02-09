@@ -28,6 +28,7 @@ class DB
     {
         
         $query = sprintf('INSERT INTO %1$s (%2$s) VALUES (%3$s)', $table, $columns, $values);
+        var_dump($query);
         $sth = $this->db->prepare($query);
         $sth->execute();
         return true;
@@ -54,6 +55,21 @@ class DB
         return $rows;
     }
 
+    /**
+     * Function to Update database records
+     * @param string $table name of the table to read
+     * @param string $set colums and values to set
+     * @param string $where filter rows with where; default 1
+     * @return bool true on succes
+     */
+    public function Update($table, $set, $where = '1')
+    {
+        $query = sprintf('UPDATE %1$s SET %2$s WHERE %3$s', $table, $set, $where);
+        var_dump($query);
+        $sth = $this->db->prepare($query);
+        $sth->execute();
+        return true;
+    }
     /**
      * Function to Delete database records
      * @param string $table name of the table to read

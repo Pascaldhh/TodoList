@@ -3,49 +3,23 @@ const todoSubmit = document.querySelector('#todo-submit');
 const todoResults = document.querySelector('#to-dos');
 const todoItem = document.querySelectorAll('#to-dos .item');
 const todoLists = document.querySelector('#todoLists');
+const addList = document.querySelector('#add_list');
+const deleteList = document.querySelector('#delete_list');
+const changeListName = document.querySelector('#change_name');
+const form = document.querySelector('#addTodoForm');
+
+//Prevent default form
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+})
 
 //Create todo when pressed on add
 todoSubmit.addEventListener('click', () => 
 {
     createNewTodo(todo.value);
     saveTodo(todo.value);
+    todo.value = '';
 });
-
-//Get todos from database
-function getTodos(tableName, f)
-{
-    $.post( "./php/getTodos.php", {todo: tableName})
-    .done(function(tableName) {
-        
-        json = JSON.parse(tableName);
-        // let listData = json.splice(0, 2);
-        
-        json.forEach(item =>
-        {
-            if(f == 1) createNewTodo(item['todo']);
-            if(f == 2) createNewList(item['name']);
-        });
-    })
-    
-}
-getTodos('todo_lists', 1);
-
-//Save todo to database
-function saveTodo(data)
-{
-    $.post( "./php/postTodos.php", { todo: data })
-    .done(function( data ) {
-        console.log(data);
-    });
-}
-
-function deleteTodo(data)
-{
-    $.post( "./php/deleteTodo.php", { deleteTodo: data })
-    .done(function( data ) {
-        console.log('works: '+data);
-    });
-}
 
 //Create new todo
 function createNewTodo(data)
@@ -84,6 +58,145 @@ function createNewList(data)
     item.textContent = data;
     item.value = data;
 }
-todoLists.addEventListener('change', () => {
 
+
+
+
+
+
+
+function getCurrentListId(value)
+{
+    const dbResults = getTodos('lists', 'id', `name = '${value}'`);
+    return dbResults;
+}
+
+function importAllLists()
+{
+    const dbResults = getTodos('lists');
+    dbResults.done((data) => {
+        let listData = JSON.parse(data);
+
+        listData.forEach(item => {
+            createNewList(item['name']);
+        });
+    });
+}
+
+function importAllTodos(value)
+{
+    const dbResults = getTodos('todos');
+
+    dbResults.done((data) => {
+        let listData = JSON.parse(data);
+        if(listData.length == 0) return;
+        if(!value) value = listData[0]['name'];
+        console.log(listData);
+        listData.forEach(item => {
+            if(item['name'] == value) {
+                createNewTodo(item['todo']);
+            }
+        });
+    });
+}
+
+importAllLists();
+importAllTodos();
+
+todoLists.addEventListener('change', () => {
+    todoResults.innerHTML = '';
+    importAllTodos(todoLists.value);
 });
+
+addList.addEventListener('click', () => {
+    let listName = prompt('The list name is: ');
+    if(listName == null) return;
+    saveTodo(listName, 'todo_lists');
+    createNewList(listName);
+});
+
+deleteList.addEventListener('click', () => {
+    deleteTodo('', 'todo_lists');
+    const todoListOption = document.querySelector('#todoLists option:checked');
+    todoListOption.remove();
+    importAllTodos(todoLists.value);
+});
+
+changeListName.addEventListener('click', () => {
+    const newListName = prompt('The new list name is: ');
+    if(newListName == null) return;
+    updateTodo(newListName);
+    const checked = document.querySelector('#todoLists option:checked');
+    checked.value = newListName;
+    checked.textContent = newListName;
+});
+
+
+/** database functions **/
+
+//Get todos from database
+function getTodos(type, select = '*', where = '1')
+{
+    let join = '';
+    if(type == 'todos') 
+    {   
+        join = 'INNER JOIN to_dos ON todo_lists.id = to_dos.list_id';
+    }
+    return $.post( "./php/getTodos.php", {todo: 'todo_lists', select: select, where: where, join: join})
+    
+}
+
+//Save todo to database
+async function saveTodo(data, db = 'to_dos')
+{
+    let dataId = 0;
+    await getCurrentListId(todoLists.value).then((data) => {
+        if(data)
+        {
+            dataId = JSON.parse(data);
+        } 
+    });
+
+    if(dataId.length == 0) dataId = '';
+    else dataId = dataId[0]['id'];
+
+    $.post( "./php/postTodos.php", { dbname: db, todo: data, id: dataId})
+    .done(function( data ) {
+        console.log(data);
+    });
+}
+
+//Update List name from database
+async function updateTodo(data = '')
+{
+    let dataId = 0;
+    await getCurrentListId(todoLists.value).then((data) => {
+        dataId = JSON.parse(data);
+    });
+
+    if(dataId.length == 0) dataId = '';
+    else dataId = dataId[0]['id'];
+
+    $.post( "./php/updateTodo.php", { update: data, id: dataId})
+    .done(function( data ) {
+        console.log('works: '+data);
+    });
+}
+
+
+//Delete todo from database
+async function deleteTodo(data = '', dbname = 'to_dos')
+{
+    let dataId = 0;
+    await getCurrentListId(todoLists.value).then((data) => {
+        dataId = JSON.parse(data);
+    });
+
+    if(dataId.length == 0) dataId = '';
+    else dataId = dataId[0]['id'];
+
+    $.post( "./php/deleteTodo.php", { deleteTodo: data, db: dbname, id: dataId })
+    .done(function( data ) {
+        console.log('works: '+data);
+    });
+}

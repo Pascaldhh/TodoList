@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/site.webmanifest">
     <link rel="stylesheet" href="style.css">
     <title>To-do list Pascal</title>
 </head>
@@ -14,23 +18,29 @@
             <h1>To Do List</h1>
             <div class="todo-lists">
                 <div class="btn-group">
-                    <button>Add list</button>
-                    <button>Remove list</button>
+                    <button id="add_list">Add list</button>
+                    <div class="btn-group gap-1">
+                        <button id="change_name">Change name list</button>
+                        <button id="delete_list">Remove list</button>
+                    </div>
+                    
                 </div>
                 
                 <select id="todoLists">
                     
                 </select>
             </div>
-            <div class="field-group">
+            
+            <form id="addTodoForm" class="field-group">
                 <input id="todo-item" type="text">
                 <input id="todo-submit"type="submit" value="Add">
-            </div>
+            </form>
+            
             <div id="to-dos"></div>
         </div>
         
     </div>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="main.js"></script>
+    <script type="module" src="main.js"></script>
 </body>
 </html>

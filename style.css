@@ -25,7 +25,7 @@ h1 {
     justify-content: center;
 }
 .todo-cont {
-    margin-top: 50px;
+    margin: 50px 0;
     display: flex;
     flex-direction: column;
     gap: 25px;
@@ -42,6 +42,9 @@ h1 {
     border:none;
     border-radius: 3px;
     font-size: 1.3rem;
+}
+.field-group input:focus, .field-group input:focus-visible {
+    outline: none;
 }
 .field-group input[type="text"] {
     border-top-right-radius: 0;
@@ -71,7 +74,9 @@ h1 {
 #to-dos .item img {
     cursor: pointer;
 }
-
+#addTodoForm {
+    width: 100%;
+}
 .todo-lists {
     display: flex;
     flex-direction: column;
@@ -86,12 +91,21 @@ h1 {
 .todo-lists .btn-group button {
     border: none;
     color:white;
+    padding: 7px 15px;
+    border-radius: 3px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
 }
-.todo-lists .btn-group button:nth-child(1) {
-    background-color: green;
+.todo-lists .btn-group button#add_list {
+    background-color: rgb(34, 180, 34);
 }
-.todo-lists .btn-group button:nth-child(2) {
-    background-color: red;
+.todo-lists .btn-group button#change_name {
+    background-color: rgb(255, 166, 0);
+}
+.todo-lists .btn-group button#delete_list {
+    background-color: rgb(255, 0, 0);
 }
 .todo-lists select#todoLists {
     width: 100%;
@@ -99,4 +113,7 @@ h1 {
     padding: 6px 12px;
     border:none;
     border-radius: 3px;
+}
+.gap-1 {
+    gap: 10px;
 }
